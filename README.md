@@ -2,7 +2,7 @@
 
 Este proyecto pretende servir de herramienta para la priorización mediante criterios múltiples utilizando Proceso de Análisis Jerárquico (AHP por sus siglas en Inglés).
 
-La idea es que quien la utilize genere su propio interfáz para autenticación de usuarios (preferiblemente integrándolo con algún sistema de autenticación). Mientras se ha creado una forma de crear usuarios y almacenarlos, aunque no se proveen métodos para la gestión y recuperación de claves.
+La idea es que, quien desee utilizarla, genere su propio interfáz para autenticación de usuarios. Mientras, se ha creado una forma de crear usuarios y almacenarlos, aunque no se proveen métodos para la gestión y recuperación de claves.
 
 Para su uso, tras iniciar sesión, se debe generar alguna Lista donde se almacenará la información. tras lo cual se debe crear la estructura de criterios que regirán la evaluación. También debe indicar la preferencia en la relación de estos criterios.
 
