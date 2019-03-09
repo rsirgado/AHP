@@ -1,4 +1,4 @@
-# AHP
+# AHP - Analytic  Hierarchy  Process o Proceso de Análisis Jerárquico
 
 Este proyecto pretende servir de herramienta para la priorización mediante criterios múltiples utilizando Proceso de Análisis Jerárquico (AHP por sus siglas en Inglés).
 
