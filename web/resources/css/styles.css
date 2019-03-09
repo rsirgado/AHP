@@ -1,0 +1,47 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : 18-feb-2019, 17:12:21
+    Author     : Ramon
+*/
+
+.listas_sidebar_dateCriterio{
+    font-style: italic;
+    font-size: small
+}
+
+.listas_northLayout{
+    
+    width:available;
+}
+.listas_northLayout_topLeftPanel{
+    float:left;
+    height: 100px;
+}
+
+.listas_northLayout_topRightPanel{
+    float:right;
+}
+
+.listas_leftLayout_tree{
+    border:0px;
+}
+
+.sinBordes{
+    border:0px !important;
+}
+
+
+.KKui-datagrid-row tr, .ui-datagrid-column td, ui-outputpanel ui-widget div, table, tbody, .ui-widget-content tr{
+    border:none !important;
+    
+}
+
+.ui-treenode-icon{
+    height:25px;
+    width: 25px;
+    
+}

@@ -1,0 +1,360 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+
+    <h:head>
+        <title>Listas personales</title>
+        <h:outputStylesheet library="css" name="styles.css" />
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/regular.css" integrity="sha384-IG162Tfx2WTn//TRUi9ahZHsz47lNKzYOp0b6Vv8qltVlPkub2yj9TVwzNck6GEF" crossorigin="anonymous"/>
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/fontawesome.css" integrity="sha384-4aon80D8rXCGx9ayDt85LbyUHeMWd3UiBaWliBlJ53yzm9hqN21A+o1pqoyK04h+" crossorigin="anonymous"/>
+    </h:head>
+    <h:body>
+        <p:growl id="growl" sticky="false" showDetail="true" life="6000" />
+
+
+
+        <p:layout fullPage="true" id="Layout" >
+            <p:layoutUnit position="north" id="topLayout" resizable="false" styleClass="listas_northLayout">
+                <p:outputPanel id="topPanel">
+                    <p:outputPanel id="topLeftPanel" styleClass="listas_northLayout_topLeftPanel">
+                        <h:form id="topLeftForm">
+                            <h2>#{controlListView.listaSeleccionada.nombreLista}</h2>
+                            <p:commandLink id="topLeftCommandLink" oncomplete="PF('sidebarListas').show()">
+                                #{msgs['listasView.mostrarListas']}
+                            </p:commandLink>
+                        </h:form>
+                    </p:outputPanel>
+                    <p:outputPanel id="topRightPanel" styleClass="listas_northLayout_topRightPanel">
+                        <h:form id="topRightForm">
+                            <p:menuButton id="toRightMenuButton" icon="fa fa-fw fa-user" value="#{session.getAttribute('username')}" >
+                                <p:menuitem id="topRightMenuItemLogout" icon="fa fa-fw fa-power-off" value="#{msgs['listasView.logout']}" action="#{controlador.logout()}"/>
+                            </p:menuButton>
+                        </h:form>
+                    </p:outputPanel>
+                </p:outputPanel>
+            </p:layoutUnit>
+            <p:layoutUnit id="leftLayout" position="west" style="width: 300px;" 
+                          closable="false" resizable="true" minSize="100"
+                          maxSize="500">
+                <h:form id="leftForm" >
+
+                    <p:tree id="leftLayoutTree" value="#{controlListView.tree}" var="node" 
+                            selectionMode="single" selection="#{controlListView.selectedTreeNode}"  
+                            dynamic="true" styleClass="listas_leftLayout_tree" style="height: available"                            >
+
+                        <p:treeNode type="ContenedorCriterio" expandedIcon="fa fa-fw fa-folder-open-o" collapsedIcon="fa fa-fw fa-folder-o">
+                            <h:outputText value="#{node}"/>
+                        </p:treeNode>
+                        <p:treeNode type="ContenedorElemento" expandedIcon="fa fa-fw fa-cubes" collapsedIcon="fa fa-fw fa-folder">
+                            <h:outputText value="#{node}"/>
+                        </p:treeNode>
+                        <p:treeNode type="GrupoCriterio" expandedIcon="fa fa-fw fa-files-o" collapsedIcon="fa fa-fw fa-plus-square-o" >
+                            <h:outputText value="#{node.nombreCriterio}"/>
+                        </p:treeNode>
+                        <p:treeNode type="Criterio" expandedIcon="fa fa-fw fa-file-o" collapsedIcon="fa fa-fw fa-file-o" >
+                            <h:outputText value="#{node.nombreCriterio}"/>
+                        </p:treeNode>
+
+                        <p:ajax event="select"    update="centerForm"
+                                />
+                    </p:tree>
+
+                    <p:contextMenu for="leftLayoutTree" nodeType="ContenedorCriterio" >
+                        <p:menuitem value="Nuevo" action="#{controlador.nuevoCriterio()}" update="growl leftForm" icon="fa fa-fw fa-plus" />
+                    </p:contextMenu>
+                    <p:contextMenu for="leftLayoutTree" nodeType="Criterio">
+                        <p:menuitem value="Nuevo" action="#{controlador.nuevoCriterio()}" update="growl leftForm" icon="fa fa-fw fa-plus"/>
+                        <p:menuitem value="Editar" action="#{controlador.editaCriterio()}" update="growl leftForm criterioDlg" icon="fa fa-fw fa-pencil-square-o"/>
+                        <p:menuitem value="Borrar" action="#{controlador.borraCriterio()}" update="growl leftForm centerForm :centerForm:tablaElementos" icon="fa fa-fw fa-times">
+                            <p:confirm header="#{msgs['dlgConfirmBorradoCriterio_Title']}"
+                                       message="#{msgs['dlgConfirmBorradoCriterio_Message']}"
+                                       icon="fa fa-fw fa-exclamation-triangle"/>
+                        </p:menuitem>
+                    </p:contextMenu>
+                    <p:contextMenu for="leftLayoutTree" nodeType="GrupoCriterio">
+                        <p:menuitem value="Nuevo" action="#{controlador.nuevoCriterio()}" update="growl leftForm" icon="fa fa-fw fa-plus"/>
+                        <p:menuitem value="Editar" action="#{controlador.editaCriterio()}" update="growl leftForm criterioDlg" icon="fa fa-fw fa-edit"/>
+                        <p:menuitem value="Borrar" action="#{controlador.borraCriterio()}" update="growl leftForm centerForm :centerForm:tablaElementos" icon="fa fa-fw fa-times">
+                            <p:confirm header="#{msgs['dlgConfirmBorradoCriterio_Title']}"
+                                       message="#{msgs['dlgConfirmBorradoCriterio_Message']}"
+                                       icon="fa fa-fw fa-exclamation-triangle"/>
+                        </p:menuitem>
+                    </p:contextMenu>
+
+                    <p:confirmDialog severity="alert" closable="true" showEffect="fade" 
+                                     hideEffect="fade" global="true"
+                                     widgetVar="cd2" width="300px" closeOnEscape="true">
+                        <p:commandButton value="No" styleClass="ui-confirmdialog-no" type="button" 
+                                         style="float: right" icon="fa fa-fw fa-times"/>
+                        <p:commandButton value="Si" styleClass="ui-confirmdialog-yes" 
+                                         style="float: right" type="button" icon="fa fa-fw fa-check"/>
+
+                    </p:confirmDialog>
+                </h:form>
+
+            </p:layoutUnit>
+            <p:layoutUnit id="centerLayout" position="center">
+                <h:form id="centerForm" >
+
+                    <p:remoteCommand name="onCellEdit" update="criterioDataTable leftForm" />
+                    <p:panel widgetVar="panelContenedorCriterio" rendered="#{controlListView.contenedorCriterioSelected}"
+                             styleClass="sinBordes">
+
+
+                    </p:panel>
+                    <p:panel widgetVar="panelGrupoCriterio" rendered="#{controlListView.grupoCriterioSelected}"
+                             styleClass="sinBordes">
+                        <p:remoteCommand name="onCellEdit" update="centerForm criterioDataTable leftForm formSidebar" />
+                        <p:panel header="#{controlListView.selectedCriterio.nombreCriterio}" style="margin-bottom: 20px" 
+                                 toggleable="true" toggleSpeed="500" 
+                                 closeSpeed="500" widgetVar="subpanelGrupoCriterio">
+                            <h:panelGrid columns="2" cellpadding="10" >
+                                <p:outputLabel value="#{msgs['listasView.peso']}"/>
+                                <h:outputText value="#{controlListView.selectedCriterio.pesoS}"/>
+                                <p:outputLabel value="#{msgs['listasView.pesoPonderado']}"/>
+                                <h:outputText value="#{controlListView.selectedCriterio.pesoPonderadoS}"/>
+                            </h:panelGrid>
+                        </p:panel>
+
+                        <p:dataTable id="criterioDataTable" value="#{controlListView.selectedCriterio.hijos}" 
+                                     var="fila" scrollable="true" editable="true" 
+                                     editMode="cell" rowIndexVar="rowIndex" scrollHeight="100%"
+                                     scrollWidth="100%">
+
+                            <p:ajax event="cellEdit" listener="#{controlador.saveData}"  oncomplete="onCellEdit()" />
+
+                            <p:column class="ui-state-default" style="text-align: center">
+                                <f:facet name="header">#{msgs['listasView.criterio']}</f:facet>
+                                <h:outputText value="#{fila.nombreCriterio}" />
+                            </p:column>   
+
+                            <p:columns value="#{controlListView.selectedCriterio.hijos}" 
+                                       var="columna" style="text-align: center" columnIndexVar="colIndex">
+                                <f:facet name="header"><h:outputText value="#{columna.nombreCriterio}"/></f:facet>
+                                <p:cellEditor>
+                                    <f:facet name="output"><h:outputText value="#{fila.getValoracionCriterioB(columna).val}" /></f:facet>
+                                    <f:facet name="input">
+                                        <h:selectOneMenu value="#{fila.getValoracionCriterioB(columna).selectVal}" >
+                                            <p:ajax event="change" listener="#{controlListView.cellChanged}" />
+                                            <f:selectItem itemLabel="#{msgs['listasView.criterio9']}" itemValue="8"  />
+                                            <f:selectItem itemLabel="#{msgs['listasView.criterio7']}" itemValue="7" />
+                                            <f:selectItem itemLabel="#{msgs['listasView.criterio5']}" itemValue="6" />
+                                            <f:selectItem itemLabel="#{msgs['listasView.criterio3']}" itemValue="5" />
+                                            <f:selectItem itemLabel="#{msgs['listasView.criterio1']}" itemValue="4" />
+                                            <f:selectItem itemLabel="#{msgs['listasView.criterio1/3']}" itemValue="3" />
+                                            <f:selectItem itemLabel="#{msgs['listasView.criterio1/5']}" itemValue="2" />
+                                            <f:selectItem itemLabel="#{msgs['listasView.criterio1/7']}" itemValue="1" />
+                                            <f:selectItem itemLabel="#{msgs['listasView.criterio1/9']}" itemValue="0" />
+                                        </h:selectOneMenu>
+                                    </f:facet>
+                                </p:cellEditor>
+                            </p:columns>
+                        </p:dataTable>
+                    </p:panel>
+                    <p:panel widgetVar="panelCriterio" rendered="#{controlListView.criterioSelected}"
+                             styleClass="sinBordes" >
+                        <p:remoteCommand name="onCellEdit" update="centerForm criterioDataTable leftForm formSidebar" />
+                        <p:panel header="#{controlListView.selectedCriterio.nombreCriterio}" style="margin-bottom: 20px" 
+                                 toggleable="true" toggleSpeed="500" 
+                                 closeSpeed="500" widgetVar="subpanelGrupoCriterio">
+                            <h:panelGrid columns="2" cellpadding="10" >
+                                <p:outputLabel value="#{msgs['listasView.peso']}"/>
+                                <h:outputText value="#{controlListView.selectedCriterio.pesoS}"/>
+                                <p:outputLabel value="#{msgs['listasView.pesoPonderado']}"/>
+                                <h:outputText value="#{controlListView.selectedCriterio.pesoPonderadoS}"/>
+                            </h:panelGrid>
+                        </p:panel>
+                    </p:panel>
+                    <p:panel id="panelContenedorElemento" widgetVar="tablaElementos" 
+                             rendered="#{controlListView.contenedorElementoSelected}"
+                             styleClass="sinBordes">
+                        <p:remoteCommand name="onCaracteristicaUpdate" update="centerForm" />
+
+                        <p:dataTable id="tablaElementos" scrollable="true" 
+                                     scrollWidth="100%" scrollHeight="100%"
+                                     value="#{controlListView.listaElementos}" var="fila" 
+                                     selection="#{controlListView.selectedElemento}"
+                                     editable="true" editMode="row" selectionMode="single"
+                                     rowKey="#{fila.idElemento}">
+                            <p:ajax event="rowEdit" listener="#{controlador.guardarCaracteristicas}"  oncomplete="onCaracteristicaUpdate()" />
+
+                            <p:column headerText="Elementos" sortBy="#{fila.nombreElemento}">
+                                <p:cellEditor>
+                                    <f:facet name="output">
+                                        <h:outputText value="#{fila.nombreElemento}"/>
+                                    </f:facet>
+                                    <f:facet name="input">
+                                        <p:inputText value="#{fila.nombreElemento}"/>
+                                    </f:facet>
+                                </p:cellEditor>
+
+                            </p:column>
+
+                            <p:columns value ="#{controlador.cabecerasCriterios}" 
+                                       var="columna" style="text-align: center"
+                                       sortBy="#{fila.getCaracteristicaCriterio(columna).criterioSeleccionado.nombreCriterio}">
+                                <f:facet name="header">
+                                    <h:outputText value="#{columna.nombreCriterio}"
+                                                  style="text-align: center"/>
+                                </f:facet>
+                                <p:cellEditor>
+                                    <f:facet name="output">
+                                        <h:outputText value="#{fila.getCaracteristicaCriterio(columna).criterioSeleccionado.nombreCriterio}" />
+                                    </f:facet>
+                                    <f:facet name="input">
+                                        <h:selectOneMenu  value="#{fila.getCaracteristicaCriterio(columna).val}">   
+                                            <f:selectItems value="#{columna.hijos}"   
+                                                           var="menuItem" itemValue="#{menuItem.idCriterio}"
+                                                           itemLabel="#{menuItem.nombreCriterio}"/>
+                                        </h:selectOneMenu>
+                                    </f:facet>
+                                </p:cellEditor>
+                            </p:columns>
+                            <p:column headerText="#{msgs['listasView.puntuacion']}" style="text-align: center"
+                                      sortBy="#{fila.puntuacion}">
+                                <h:outputText value="#{fila.puntuacionS}"/>
+                            </p:column>
+                            <p:column  style="align-content: center;width: 40px">
+                                <p:rowEditor />
+                            </p:column>
+                        </p:dataTable>
+                    </p:panel>
+
+
+                    <p:contextMenu id="menuElementos"  for="tablaElementos">
+                        <p:menuitem value="Nuevo" action="#{controlador.nuevoElemento()}" oncomplete="onCaracteristicaUpdate()" update="panelContenedorElemento" icon="fa fa-fw fa-plus"/>
+                        <p:menuitem value="Borrar" action="#{controlador.borraElemento()}" update="panelContenedorElemento" icon="fa fa-fw fa-times">
+                            <p:confirm header="#{msgs['dlgConfirmBorradoElemento_Title']}"
+                                       message="#{msgs['dlgConfirmBorradoElemento_Message']}"
+                                       icon="fa fa-fw fa-exclamation-triangle"/>
+                        </p:menuitem>
+                    </p:contextMenu>
+                    <p:panel widgetVar="panelElemento" rendered="#{controlListView.elementoSelected}"
+                             styleClass="sinBordes">
+                    </p:panel>
+                </h:form>
+            </p:layoutUnit>
+        </p:layout>
+
+        <!-- sidebar con las listas -->
+        <p:sidebar widgetVar="sidebarListas" position="left" baseZIndex="10000">
+            <h1 style="font-weight:normal">#{msgs['listasView.title']}</h1>
+            <h:form id="formSidebar">
+
+                <p:growl id="growl2" sticky="false" showDetail="true" life="3000" />
+                <p:dataGrid id="gridListas" value="#{controlListView.listasUsuario}" 
+                            var="lista" paginator="true"  columns="1" 
+                            paginatorTemplate="{menuListas}" paginatorPosition="top">
+                    <f:facet name="{menuListas}">
+                        <p:commandButton id="nuevaLista" icon="fa fa-fw fa-plus" 
+                                         type="button" immediate="true" onclick="PF('nuevaListaDlg').show()">
+                        </p:commandButton>
+                    </f:facet>
+                    <p:outputPanel>
+                        <p:panelGrid id="filaListas" columns="2" style="width:100%">
+                            <p:commandLink update="formSidebar" 
+                                           oncomplete="PF('cd').show()"  
+                                           title="#{msgs['listasView.borrarLista']}">
+                                <f:setPropertyActionListener target="#{controlListView.listaSeleccionada}" value="#{lista}"/>
+                                <h:outputText styleClass="fa fa-fw fa-times" style="margin:0 auto;"/>
+                            </p:commandLink>
+                            <p:commandLink 
+                                update="topLeftForm leftForm centerForm" 
+                                action="#{controlador.actualizaCriterios()}"
+                                oncomplete="PF('sidebarListas').hide()">
+                                <f:setPropertyActionListener target="#{controlListView.listaSeleccionada}" value="#{lista}"/>
+                                <h:outputText value="#{lista.nombreLista}" /><br></br>
+                                <h:outputText value="#{lista.fechaCreacion}" styleClass="listas_sidebar_dateCriterio"/>
+                            </p:commandLink>
+                        </p:panelGrid>
+                    </p:outputPanel>
+
+                </p:dataGrid>    
+            </h:form>
+            <h:form id="confirmForm">
+                <p:confirmDialog message="#{msgs['dlgConfirmBorradoLista_Message']}"  
+                                 header="#{msgs['dlgConfirmBorradoLista_Title']}" 
+                                 severity="alert" showEffect="fade" 
+                                 hideEffect="fade" closable="false"
+                                 widgetVar="cd" width="300px">
+                    <p:commandButton value="#{msgs['global.No']}" oncomplete="PF('cd').hide()" style="float: right"/>
+                    <p:commandButton value="#{msgs['global.Si']}" actionListener="#{controlador.deleteList()}"
+                                     oncomplete="PF('cd').hide()" style="float: right"
+                                     update="formSidebar topLeftForm leftForm centerForm"/>
+
+                </p:confirmDialog>
+            </h:form>
+
+            <h:form id="formDialog">
+                <p:dialog widgetVar="nuevaListaDlg" modal="true" 
+                          showEffect="fade" hideEffect="fade"
+
+                          resizable="false" header="#{msgs['dlgNuevaLista.Titulo']}" closable="false"
+                          width="300px">
+                    <h:inputText id="nombreNuevaLista" value="#{controlListView.nuevaLista}" 
+                                 required="true" style="display:block;width: 95%;margin:5px"  
+                                 disabled="false"  >
+                        <f:validateLength minimum="1" maximum="45"/>
+                    </h:inputText>
+                    <p:commandButton value="#{msgs['global.aceptar']}" 
+                                     style="float:left;margin: 5px"
+                                     action="#{controlador.insertaNuevaLista()}"
+                                     process="formDialog"
+                                     update="formSidebar nombreNuevaLista formDialog">
+                        <p:ajax onsuccess="PF('nuevaListaDlg').hide()"/>
+                    </p:commandButton> 
+                    <p:commandButton value="#{msgs['global.cancelar']}" 
+                                     style="float:right;margin:5px"
+                                     action="#{controlListView.limpiaNuevaLista()}"
+                                     update="formDialog"
+                                     oncomplete="PF('nuevaListaDlg').hide()" 
+                                     resetValues="true">
+                        <p:ajax resetValues="true"/>
+                    </p:commandButton>
+
+                </p:dialog>
+
+            </h:form>
+            <h:form id="criterioDlg">
+                <p:dialog widgetVar="nuevoCriterioDlg" modal="true" 
+                          showEffect="fade" hideEffect="fade"
+                          resizable="false" header="#{controlListView.editMode?msgs['dlgNuevoCriterio.EditTitulo']:msgs['dlgNuevoCriterio.Titulo']}" closable="false"
+                          width="300px">
+                    <h:outputLabel for="nombreNuevoCriterio" value="#{msgs['dlgNuevoCriterio.Criterio']}" />
+                    <h:inputText id="nombreNuevoCriterio" value="#{controlListView.nuevoCriterio.nombreCriterio}" 
+                                 required="true" style="display:block;width: 95%;margin:5px" >
+                        <f:validateLength minimum="1" maximum="45"/>
+                    </h:inputText>
+                    <p:message for="nombreNuevoCriterio" display="icon" />
+                    <h:outputLabel for="descripcionNuevoCriterio" value="#{msgs['dlgNuevoCriterio.Descripcion']}" />
+                    <h:inputTextarea id="descripcionNuevoCriterio" value ="#{controlListView.nuevoCriterio.descripcion}" 
+                                     rows="5" cols="26" style="display:block;width: 95%;margin:5px">
+                    </h:inputTextarea>
+                    <p:commandButton value="#{msgs['global.aceptar']}" 
+                                     style="float:left;margin: 5px"
+                                     action="#{controlador.insertaNuevoCritrerio()}"
+                                     update="leftForm centerForm nombreNuevoCriterio"
+                                     oncomplete="PF('nuevoCriterioDlg').hide()">
+                    </p:commandButton> 
+                    <p:commandButton value="#{msgs['global.cancelar']}" 
+                                     style="float:right;margin:5px"
+                                     action="#{controlListView.limpiaNuevoCriterio()}"
+                                     update="criterioDlg"
+                                     oncomplete="PF('nuevoCriterioDlg').hide()" 
+                                     resetValues="true">
+
+                    </p:commandButton>
+                </p:dialog>
+
+            </h:form>
+        </p:sidebar>
+    </h:body>
+
+</html>
+

@@ -1,0 +1,87 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <title>AHP Login</title>
+    </h:head>
+    <h:body>
+        <h:form>
+            <p:panel id="panel" header="AHP Login" style="width: 420px; margin:auto">
+                <p:messages id="msgs" showDetail="true"/>
+
+                <h:panelGrid columns="3" cellpadding="5" >
+                    <p:outputLabel for="username" value="#{msgs['loginForm.login']}" />
+                    <p:inputText id="username" value="#{controlLoginView.login}" required="true" label="#{msgs['loginForm.login']}">
+                        <f:validateLength minimum="1" maximum="45" />
+                    </p:inputText>
+                    <p:message for="username" display="icon" />
+
+                    <p:outputLabel for="password" value="#{msgs['loginForm.password']}" />
+                    <p:inputText id="password" value="#{controlLoginView.password}" label="#{msgs['loginForm.password']}" required="true" type="password">
+                        <f:validateLength minimum="1" maximum="45" />
+                        <p:ajax event="keyup" />
+                    </p:inputText>
+                    <p:message for="password" id="msgLastname" display="icon" />
+
+                </h:panelGrid>
+
+                <p:commandButton value="#{msgs['loginForm.submit']}" action="#{controlador.login()}" ajax="false"/>
+                <p:commandLink value="#{msgs['loginForm.nuevoUsuario']}" onclick="PF('newUserDialog').show();" style="float:right"/>
+            </p:panel>
+        </h:form>
+        <p:dialog header="#{msgs['loginForm.title']}" id="newUserDialog" 
+                  widgetVar="newUserDialog" showEffect="fade" hideEffect="fade" 
+                  height="auto" closable="false">
+            <h:form id="newUserForm">
+                <p:growl id="growl" life="3000" />
+                <h:panelGrid columns="3" cellpadding="5" >
+                    <p:outputLabel for="newUserLogin" value="#{msgs['loginForm.login']}" />
+                    <p:inputText id="newUserLogin" value="#{controlLoginView.usuario.login}" required="true" label="#{msgs['loginForm.login']}">
+                        <f:validateLength minimum="1" maximum="45" />
+                    </p:inputText>
+                    <p:message for="newUserLogin" display="icon" />
+
+                    <p:outputLabel for="newUserPassword" value="#{msgs['loginForm.password']}" />
+                    <p:inputText id="newUserPassword" value="#{controlLoginView.usuario.password}" label="#{msgs['loginForm.password']}" required="true" type="password">
+                        <f:validateLength minimum="1" maximum="45" />
+                        <p:ajax update="msgLastname" event="keyup" />
+                    </p:inputText>
+                    <p:message for="newUserPassword" id="msgLastname" display="icon" />
+
+                    <p:outputLabel for="newUserName" value="#{msgs['loginForm.nombre']}" />
+                    <p:inputText id="newUserName" value="#{controlLoginView.usuario.nombre}" required="true" label="#{msgs['loginForm.nombre']}">
+                        <f:validateLength minimum="1" maximum="45" />
+                    </p:inputText>
+                    <p:message for="newUserName" display="icon" />
+
+                    <p:outputLabel for="newUserSurname" value="#{msgs['loginForm.apellido1']}" />
+                    <p:inputText id="newUserSurname" value="#{controlLoginView.usuario.apellido1}" required="true" label="#{msgs['loginForm.apellido1']}">
+                        <f:validateLength minimum="1" maximum="45" />
+                    </p:inputText>
+                    <p:message for="newUserSurname" display="icon" />
+
+                    <p:outputLabel for="newUser2Surname" value="#{msgs['loginForm.apellido2']}" />
+                    <p:inputText id="newUser2Surname" value="#{controlLoginView.usuario.apellido2}" required="false" label="#{msgs['loginForm.apellido2']}">
+                        <f:validateLength maximum="45" />
+                    </p:inputText>
+                    <p:message for="newUser2Surname" display="icon" />
+
+                    <p:outputLabel for="newUserMail" value="#{msgs['loginForm.mail']}" />
+                    <p:inputText id="newUserMail" value="#{controlLoginView.usuario.mail}" required="true" label="#{msgs['loginForm.mail']}">
+                        <f:validateRegex pattern="[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$"  />
+                    </p:inputText>
+                    <p:message for="newUserMail" display="icon" />
+                </h:panelGrid>
+                <p:commandButton value="#{msgs['loginForm.submit']}" action="#{controlador.insertaNuevoUsuario()}" update="growl newUserForm" ajax="true" style="margin: 10px;padding:3px;float:left"/>
+                <p:commandButton value="#{msgs['loginForm.cancel']}" resetValues="true" immediate="true" action="#{controlador.cancelaNuevoUsuario()}" update="growl newUserForm" ajax="true" styleClass="button" style="margin: 10px;padding:3px;float:right"/>
+            </h:form>
+        </p:dialog>
+
+
+        <br />
+    </h:body>
+</html>
+
